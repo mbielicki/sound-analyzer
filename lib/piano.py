@@ -35,12 +35,12 @@ class Piano:
             self.keyLabels.append(l)
             l.place(x=x, y=y, width=20, height=height)
 
-    def isBlack(i):
+    def isBlack(self, i):
         if (i + 9) % 12 in (1, 3, 6, 8, 10):
             return True
         return False
 
-    def countBlacksBefore(i):
+    def countBlacksBefore(self, i):
         octave = (i - 3) // 12
         remainder = (i + 9) % 12
         result = octave * 5
@@ -57,4 +57,14 @@ class Piano:
         return result
 
     def green(self, i):
+        if i < 0:
+            return
         self.keyLabels[i].config(bg="green")
+
+    def clear(self):
+        for i, l in enumerate(self.keyLabels):
+            bg = "black" if self.isBlack(i) else "white"
+            l.config(bg=bg)
+
+
+piano = Piano()
