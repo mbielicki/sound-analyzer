@@ -6,7 +6,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "./samples/a1-p.wav"
+WAVE_OUTPUT_FILENAME = "./examples/samples/a1-g.wav"
 
 p = pyaudio.PyAudio()
 

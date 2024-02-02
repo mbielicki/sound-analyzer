@@ -23,9 +23,9 @@ def f_to_key(f):
 
 def get_maxima(x, y):
     maxima = []
-    sensible_unit = max(y) / 10
+    sensible_unit = max(y) / 5
     for i in range(1, len(y) - 1):
-        if y[i] > y[i-1] + sensible_unit and y[i] > y[i+1] + sensible_unit:
+        if y[i] > sensible_unit and y[i] > y[i-1] + sensible_unit and y[i] > y[i+1] + sensible_unit and y[i] > reference_yf[i]:
             maxima.append(x[i])
     return maxima
 
@@ -66,6 +66,9 @@ def animate(i):
 
     yf = rfft(normalized_moment)
     xf = rfftfreq(frames, 1 / RATE)
+    if i == 0:
+        global reference_yf
+        reference_yf = yf
 
     ax2.clear()
     ax2.plot(xf, np.abs(yf))
@@ -87,11 +90,13 @@ stream = p.open(format=FORMAT,
 
 
 print('Moment duration', int(CHUNK / RATE * 1000), 'ms')
+print('Moments per second', 1000 / int(CHUNK / RATE * 1000), 'Hz')
 print("* recording")
 
 
 fig, (ax1, ax2) = plt.subplots(2)
-ani = animation.FuncAnimation(fig, animate, interval=50)
+ani = animation.FuncAnimation(
+    fig, animate, interval=50, cache_frame_data=False)
 plt.show()
 
 
