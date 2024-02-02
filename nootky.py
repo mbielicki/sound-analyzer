@@ -1,9 +1,16 @@
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg,
+    NavigationToolbar2Tk
+)
+from matplotlib.figure import Figure
 from lib.piano import piano
+from lib.utils_freq_reading import *
 import numpy as np
 import pyaudio
 from scipy.fft import rfft, rfftfreq
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib
 
 CHUNK = 2**11  # 1024
 FORMAT = pyaudio.paInt16
@@ -13,42 +20,7 @@ RECORD_SECONDS = 5
 WAVE_OUTPUT_FILENAME = "./samples/temp.wav"
 
 
-def f_to_key(f):
-    if f > 4100:
-        return -1
-    if f < 28:
-        return -2
-    return int(12 * np.log2(f / 440) + 48)
-
-
-def get_maxima(x, y):
-    maxima = []
-    sensible_unit = max(y) / 5
-    for i in range(1, len(y) - 1):
-        if y[i] > sensible_unit and y[i] > y[i-1] + sensible_unit and y[i] > y[i+1] + sensible_unit and y[i] > reference_yf[i]:
-            maxima.append(x[i])
-    return maxima
-
-
-def print_frequencies(x, y):
-    max_amp = max(y)
-    i, = np.where(y == max_amp)
-    strongest_freq,  = x[i]
-    print("The most significant frequencies:")
-    significant_freqs = get_maxima(x, y)
-    print(f'The biggest amplitude is {max_amp} for {strongest_freq} Hz')
-    print("The most significant frequencies:")
-    for i in significant_freqs:
-        print(i, end='   ')
-    print()
-
-
-def get_one_channel(signal):
-    one_channel = []
-    for index, datum in enumerate(signal):
-        if index % CHANNELS == 0:
-            one_channel.append(datum)
-    return one_channel
+p = pyaudio.PyAudio()
 
 
 def animate(i):
@@ -66,8 +38,8 @@ def animate(i):
 
     yf = rfft(normalized_moment)
     xf = rfftfreq(frames, 1 / RATE)
+    global reference_yf
     if i == 0:
-        global reference_yf
         reference_yf = yf
 
     ax2.clear()
@@ -76,11 +48,9 @@ def animate(i):
     ax2.set_xlim(0, 8_000)
 
     piano.clear()
-    for f in get_maxima(xf, np.abs(yf)):
+    for f in get_maxima(xf, np.abs(yf), reference_yf):
         piano.green(f_to_key(f))
 
-
-p = pyaudio.PyAudio()
 
 stream = p.open(format=FORMAT,
                 channels=CHANNELS,
