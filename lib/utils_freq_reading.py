@@ -9,12 +9,27 @@ def f_to_key(f):
     return int(12 * np.log2(f / 440) + 48)
 
 
-def get_maxima(x, y, reference_yf):
+def get_maxima(x, y):
     maxima = []
-    sensible_unit = max(y) / 5
-    for i in range(1, len(y) - 1):
-        if y[i] > sensible_unit and y[i] > y[i-1] + sensible_unit and y[i] > y[i+1] + sensible_unit and y[i] > reference_yf[i]:
-            maxima.append(x[i])
+    group_count = 5
+    sensible_unit = max(max(y)/5, 0.05)
+    for i in range(0, len(y) - group_count):
+        group = y[i: i + group_count]
+        gmax = max(group)
+        gmin = min(group)
+        diff = gmax - gmin
+        if diff > sensible_unit:
+            j = np.where(group == gmax)[0]
+            maxima.append(x[i+j])
+
+    for i, d in enumerate(maxima):
+        if i == 0:
+            prev = d
+            continue
+        if d == prev:
+            del maxima[i]
+        prev = d
+
     return maxima
 
 

@@ -2,7 +2,7 @@ import tkinter as tk
 
 
 class Piano:
-    def __init__(self):
+    def __init__(self, m):
         self.keysNames = [
             "0a", "0a#", "0h",
             "1c", "1c#", "1d", "1d#", "1e", "1f", "1f#", "1g", "1g#", "1a", "1a#", "1h",
@@ -14,12 +14,10 @@ class Piano:
             "7c", "7c#", "7d", "7d#", "7e", "7f", "7f#", "7g", "7g#", "7a", "7a#", "7h", "8c"
         ]
         self.keyLabels = []
-        m = tk.Tk()
-        m.title("Piano")
-        m.geometry("1070x300")
+        self.m = m
 
         for i in range(0, len(self.keysNames)):
-            y = 50
+            y = 10
             x = 20*(i - self.countBlacksBefore(i))
             height = 100
             bg = "white"
@@ -65,6 +63,3 @@ class Piano:
         for i, l in enumerate(self.keyLabels):
             bg = "black" if self.isBlack(i) else "white"
             l.config(bg=bg)
-
-
-piano = Piano()
