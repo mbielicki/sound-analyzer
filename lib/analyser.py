@@ -46,6 +46,7 @@ class Analyser:
         print('Chunks duration', chunk_duration, 'ms')
         print('Chunks per second', round(
             1000 / int(self.CHUNK / self.RATE * 1000), 2), 'Hz')
+        self.recording = True
 
     async def play(self, filename):
         with wave.open(filename, 'rb') as wf:
@@ -67,15 +68,17 @@ class Analyser:
             p.terminate()
 
     def start_reading(self, filename):
+        self.recording = False
         wf = wave.open(filename, 'rb')
         self.stream = wf
 
         def readframes_one_channel(chunk):
             data = self.stream.readframes(int(chunk / wf.getnchannels()))
-            if len(data) < self.CHUNK:
+            if len(data) < self.CHUNK * 2:
                 return None
             return data
         self.stream.read = readframes_one_channel
+        self.play(filename)
 
     def create_plots(self):
         # create and pack plots
@@ -116,11 +119,10 @@ class Analyser:
         frame_count = 0
         start_time = time.time()
 
-        running = True
+        self.running = True
 
         def on_tk_close():
-            global running
-            running = False
+            self.running = False
             # calculate average frame rate
             frame_rate = frame_count / (time.time() - start_time)
 
@@ -130,11 +132,13 @@ class Analyser:
             self.app.destroy()
 
         self.app.protocol('WM_DELETE_WINDOW', on_tk_close)
-        while running:
+        while self.running:
             # binary data
             data = self.stream.read(self.CHUNK)
+            if not data:
+                self.running = False
+                break
             data_np = np.frombuffer(data, dtype='h')
-
             self.line.set_ydata(data_np)
 
             # compute FFT and update line
@@ -151,6 +155,8 @@ class Analyser:
             self.figure.canvas.flush_events()
             frame_count += 1
 
-        self.stream.stop_stream()
+        if self.recording:
+            self.stream.stop_stream()
         self.stream.close()
-        self.p.terminate()
+        if self.recording:
+            self.p.terminate()
