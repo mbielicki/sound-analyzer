@@ -1,15 +1,17 @@
 import * as React from "react";
 import MicIcon from '@mui/icons-material/Mic';
+import DownloadIcon from '@mui/icons-material/Download';
 import { useEffect, useState } from "react";
 import { MicController, ProcessAudio } from "../utils/MicController";
 import axios from 'axios';
-import { baseUrl } from '../baseUrl'
+import { baseUrl } from '../config'
 const Cookies = require('js-cookie')
 
 const processAudio: ProcessAudio = (data) => {
     data.arrayBuffer().then(buffer => {
+        console.log(buffer)
         axios.post(baseUrl + '/api/analyze', {
-            data: buffer,
+            data: JSON.stringify(Array.from(new Uint8Array(buffer))),
 
         }, {
             headers: {
@@ -43,13 +45,18 @@ export default function AudioRecorder() {
             }
         }
 
-    return (
+    return (<>
         <MicIcon fontSize="large" onClick={onClickMicIcon}
             className={
                 (micIsOn ? "text-red-700" : "text-white")
                 + " hover:opacity-75 active:text-slate-900"
             }
         />
+        <a id="newAudioFileDownload" className="hidden" >
+            <DownloadIcon fontSize="large"
+                className="text-white hover:opacity-75 active:text-slate-900" />
+        </a>
+    </>
     )
 
 }

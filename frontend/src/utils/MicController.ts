@@ -1,4 +1,4 @@
-const TIMESLICE = 1000
+import { mediaRecorderOptions, mediaRecorderTimeslice, newAudioFileName } from "../config"
 
 class AudioRecorderError extends Error {
     constructor(message: string) {
@@ -25,33 +25,34 @@ export class MicController {
             return Promise.reject(new AudioRecorderError('mediaDevices API or getUserMedia method is not supported in this browser.'))
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-
-        this.recorder = new MediaRecorder(stream)
+        this.recorder = new MediaRecorder(stream, mediaRecorderOptions)
         this.recorder.ondataavailable = e => {
             processAudio(e.data)
             this.audioBlobs.push(e.data)
         }
 
         this.recorder.onstop = e => {
-            // const fullAudio = new Blob(this.audioBlobs)
-            // this.audioBlobs = [];
-            // const audioURL = window.URL.createObjectURL(fullAudio)
-            // const a = document.createElement('a')
-            // a.style.display = 'none'
-            // a.href = audioURL
-            // a.download = 'audio-analyzed.wav'
-            // document.body.appendChild(a)
-            // a.click()
-            // setTimeout(() => {
-            //     document.body.removeChild(a)
-            //     window.URL.revokeObjectURL(audioURL)
-            // }, 1000)
+            const fullAudio = new Blob(this.audioBlobs)
+            this.audioBlobs = [];
+            const audioURL = window.URL.createObjectURL(fullAudio)
+            const a = document.querySelector('a#newAudioFileDownload')
+            if (a instanceof HTMLAnchorElement) {
+                a.classList.remove('hidden')
+                a.classList.add('inline')
+                a.href = audioURL
+                a.download = newAudioFileName
+                a.onclick = e => {
+                    a.classList.remove('inline')
+                    a.classList.add('hidden')
+                }
+            } else
+                console.error('Cannot find anchor element to download the recorded audio.')
         }
 
-        this.start = () => this.recorder.start(TIMESLICE)
+        this.start = () => this.recorder.start(mediaRecorderTimeslice)
         this.stop = this.recorder.stop.bind(this.recorder)
 
-        this.recorder.start(TIMESLICE)
+        this.start()
     }
     
 }
