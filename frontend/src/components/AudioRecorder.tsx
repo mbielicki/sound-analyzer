@@ -2,9 +2,24 @@ import * as React from "react";
 import MicIcon from '@mui/icons-material/Mic';
 import { useEffect, useState } from "react";
 import { MicController, ProcessAudio } from "../utils/MicController";
+import axios from 'axios';
+import { baseUrl } from '../baseUrl'
+const Cookies = require('js-cookie')
 
 const processAudio: ProcessAudio = (data) => {
-    // console.log(`Audio data length: ${data.size}`)
+    data.arrayBuffer().then(buffer => {
+        axios.post(baseUrl + '/api/analyze', {
+            data: buffer,
+
+        }, {
+            headers: {
+                'X-CSRFToken': Cookies.get('csrftoken')
+            }
+        })
+            .then(res => {
+                console.log(res)
+            })
+    })
 }
 const micController = new MicController();
 
