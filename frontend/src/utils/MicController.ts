@@ -1,5 +1,8 @@
 import { mediaRecorderOptions, mediaRecorderTimeslice, newAudioFileName } from "../config"
 
+import { IMediaRecorder, MediaRecorder, register } from 'extendable-media-recorder';
+import { connect } from 'extendable-media-recorder-wav-encoder';
+
 class AudioRecorderError extends Error {
     constructor(message: string) {
         super(message)
@@ -11,7 +14,7 @@ export type ProcessAudio = (e: Blob) => void
  
 export class MicController {
     audioBlobs: Blob[]
-    recorder: MediaRecorder
+    recorder: IMediaRecorder
     start: () => void
     stop: () => void
 
@@ -24,8 +27,12 @@ export class MicController {
         if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia))
             return Promise.reject(new AudioRecorderError('mediaDevices API or getUserMedia method is not supported in this browser.'))
 
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        this.recorder = new MediaRecorder(stream, mediaRecorderOptions)
+        
+        await register(await connect());
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        this.recorder = new MediaRecorder(stream, mediaRecorderOptions);
+
         this.recorder.ondataavailable = e => {
             processAudio(e.data)
             this.audioBlobs.push(e.data)
