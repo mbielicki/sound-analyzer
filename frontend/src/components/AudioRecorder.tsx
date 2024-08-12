@@ -5,13 +5,17 @@ import { useEffect, useState } from "react";
 import { MicController, ProcessAudio } from "../utils/MicController";
 import axios from 'axios';
 import { baseUrl } from '../config'
+import hex from "../utils/arrayBufferToHex";
 const Cookies = require('js-cookie')
 
 const processAudio: ProcessAudio = (data) => {
     data.arrayBuffer().then(buffer => {
-        console.log(buffer)
+
+        const audioData = hex(buffer) //Array.from(new Uint8Array(buffer))
+        console.log(audioData)
+
         axios.post(baseUrl + '/api/analyze', {
-            data: JSON.stringify(Array.from(new Uint8Array(buffer))),
+            data: audioData,
 
         }, {
             headers: {
