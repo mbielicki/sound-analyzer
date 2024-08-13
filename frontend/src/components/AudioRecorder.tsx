@@ -9,15 +9,12 @@ import hex from "../utils/arrayBufferToHex";
 const Cookies = require('js-cookie')
 
 const processAudio: ProcessAudio = (data) => {
-    data.arrayBuffer().then(buffer => {
+    data.arrayBuffer().then(arrBuffer => {
 
-        const audioData = hex(buffer) //Array.from(new Uint8Array(buffer))
+        const audioData = arrBuffer //Array.from(new Uint8Array(buffer))
         console.log(audioData)
 
-        axios.post(baseUrl + '/api/analyze', {
-            data: audioData,
-
-        }, {
+        axios.post(baseUrl + '/api/analyze', audioData, {
             headers: {
                 'X-CSRFToken': Cookies.get('csrftoken')
             }
