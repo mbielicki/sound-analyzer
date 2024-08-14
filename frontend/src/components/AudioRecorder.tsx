@@ -5,32 +5,34 @@ import { useEffect, useState } from "react";
 import { MicController, ProcessAudio } from "../utils/MicController";
 import axios from 'axios';
 import { baseUrl } from '../config'
-import hex from "../utils/arrayBufferToHex";
+import Piano from "./Piano";
 const Cookies = require('js-cookie')
 
-const processAudio: ProcessAudio = (data) => {
-    data.arrayBuffer().then(arrBuffer => {
 
-        const audioData = arrBuffer //Array.from(new Uint8Array(buffer))
-        console.log(audioData)
-
-        axios.post(baseUrl + '/api/analyze', audioData, {
-            headers: {
-                'X-CSRFToken': Cookies.get('csrftoken')
-            }
-        })
-            .then(res => {
-                console.log(res)
-            })
-    })
-}
 const micController = new MicController();
 
 export default function AudioRecorder() {
     const [micIsOn, setMicIsOn] = useState(false)
+    const [pressedKeys, setPressedKeys] = useState([])
+
+    const postAudio: ProcessAudio = (data) => {
+        data.arrayBuffer().then(arrBuffer => {
+
+            const audioData = arrBuffer
+
+            axios.post(baseUrl + '/api/analyze', audioData, {
+                headers: {
+                    'X-CSRFToken': Cookies.get('csrftoken')
+                }
+            })
+                .then(res => {
+                    setPressedKeys(res.data.notes)
+                })
+        })
+    }
 
     useEffect(() => {
-        micController.setup(processAudio)
+        micController.setup(postAudio)
             .then(() => setMicIsOn(true))
             .catch(console.error)
     }, [])
@@ -46,18 +48,20 @@ export default function AudioRecorder() {
             }
         }
 
-    return (<>
-        <MicIcon fontSize="large" onClick={onClickMicIcon}
-            className={
-                (micIsOn ? "text-red-700" : "text-white")
-                + " hover:opacity-75 active:text-slate-900"
-            }
-        />
-        <a id="newAudioFileDownload" className="hidden" >
-            <DownloadIcon fontSize="large"
-                className="text-white hover:opacity-75 active:text-slate-900" />
-        </a>
-    </>
+    return (
+        <div className="flex flex-col items-center justify-center">
+            <MicIcon fontSize="large" onClick={onClickMicIcon}
+                className={
+                    (micIsOn ? "text-red-700" : "text-white")
+                    + " hover:opacity-75 active:text-slate-900"
+                }
+            />
+            <a id="newAudioFileDownload" className="hidden" >
+                <DownloadIcon fontSize="large"
+                    className="text-white hover:opacity-75 active:text-slate-900" />
+            </a>
+            <Piano pressedKeys={pressedKeys} />
+        </div>
     )
 
 }

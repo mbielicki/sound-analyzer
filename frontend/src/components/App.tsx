@@ -9,8 +9,6 @@ export default function App() {
             text-center text-white">Sound analyzer</h1>
             <AudioRecorder />
             <div className="w-3/4 h-40 bg-slate-400"></div>
-            <div className="w-3/4 h-40 bg-slate-400"></div>
-            <div className="w-3/4 h-40 bg-slate-400"></div>
         </main>
     )
 }
