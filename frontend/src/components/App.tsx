@@ -1,5 +1,6 @@
 import * as React from "react";
 import AudioRecorder from "./AudioRecorder";
+import Console from "./Console";
 
 export default function App() {
     return (
@@ -8,7 +9,7 @@ export default function App() {
             <h1 className="font-bold text-3xl w-full 
             text-center text-white">Sound analyzer</h1>
             <AudioRecorder />
-            <div className="w-3/4 h-40 bg-slate-400"></div>
+            <Console />
         </main>
     )
 }

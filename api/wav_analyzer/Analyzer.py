@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.fft import fft
 from .utils import f_to_key, get_maxima, normalize_chunk
 
@@ -7,7 +6,7 @@ class Analyzer:
     def __init__(self):
         self.CHUNK = 1024 * 8
         self.CHANNELS = 1
-        self.RATE = 44100
+        self.RATE = 44100 #48000 
 
         self.xf = np.linspace(0, self.RATE, self.CHUNK) # frequencies spectrum
         

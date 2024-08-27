@@ -11,7 +11,6 @@ const createKeys = () => {
     let i = 0
     const pushKeys = (colors: string[]) => {
         for (const color of colors) {
-            console.log(color)
             keys.push({ id: i++, type: color })
         }
     }
@@ -29,7 +28,6 @@ const createKeys = () => {
 }
 
 const keys = createKeys()
-console.log(keys)
 
 const Piano = ({ pressedKeys = [] }) => {
     const getKeyClasses = (key: key) => {
