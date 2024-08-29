@@ -17,7 +17,7 @@ class Analyzer:
 
         self.chunk = chunk
         self.hash = sha1(chunk).hexdigest()[:8]
-        self.plot_file = f'.\\api\\wav_analyzer\\samples\\{self.hash}.png'
+        self.plot_file = f'api\\static\\api\\plots\\{self.hash}.png'
         self.xf = np.linspace(0, self.RATE, self.CHUNK_SIZE) # frequencies spectrum
         self.yf = self._extract_frequencies()
 

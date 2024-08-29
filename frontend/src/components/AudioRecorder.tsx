@@ -3,7 +3,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useEffect, useState } from "react";
 import { MicController, ProcessAudio } from "../utils/MicController";
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { baseUrl } from '../config'
 import Piano from "./Piano";
 const Cookies = require('js-cookie')
@@ -11,7 +11,11 @@ const Cookies = require('js-cookie')
 
 const micController = new MicController();
 
-export default function AudioRecorder() {
+type Props = {
+    onAnalyzed: (res: AxiosResponse) => void
+}
+
+export default function AudioRecorder({ onAnalyzed }: Props) {
     const [micIsOn, setMicIsOn] = useState(false)
     const [pressedKeys, setPressedKeys] = useState([])
 
@@ -27,6 +31,7 @@ export default function AudioRecorder() {
             })
                 .then(res => {
                     setPressedKeys(res.data.notes)
+                    onAnalyzed(res)
                 })
         })
     }

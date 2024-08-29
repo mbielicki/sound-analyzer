@@ -15,5 +15,5 @@ def analyze(request: HttpRequest):
 
     return JsonResponse({
         'notes': analyzer.extract_notes(),
-        'plot': analyzer.plot_file
+        'plot': analyzer.plot_file[len("api\\"):]
     })
