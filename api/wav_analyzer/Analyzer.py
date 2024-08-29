@@ -5,6 +5,10 @@ from hashlib import sha1
 from scipy.fft import fft
 from .utils import f_to_key, get_maxima
 
+import os
+import time
+import threading
+
 class Analyzer:
     def __init__(self, chunk: bytes):
         self.CHUNK_SIZE = 1024 * 8
@@ -29,6 +33,12 @@ class Analyzer:
         plt.xlim(28, 4000)
         plt.plot(self.xf, self.yf)
         plt.savefig(self.plot_file)
+
+        def delete_plot_file():
+            time.sleep(5)
+            os.remove(self.plot_file)
+
+        threading.Thread(target=delete_plot_file).start()
 
     def extract_notes(self) -> list[int]:        
         piano_keys: list[int] = list()

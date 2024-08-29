@@ -8,7 +8,7 @@ from api.wav_analyzer.utils import normalize_chunk
 
 def analyze(request: HttpRequest):
     chunk = request.body
-    chunk = normalize_chunk(chunk)
+    normalize_chunk(chunk)
     analyzer = Analyzer(chunk)
 
     analyzer.plot()
