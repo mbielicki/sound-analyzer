@@ -1,4 +1,5 @@
 api/wav_analyzer/samples/*
+api/static/api/plots/*
 
 # Created by https://www.gitignore.io
 
