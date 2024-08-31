@@ -29,10 +29,13 @@ class Analyzer:
         return normalized_yf
         
     def plot(self):
+        plt.cla()
         plt.xscale('log')
         plt.xlim(28, 4000)
+        plt.ylim(0, 10)
         plt.plot(self.xf, self.yf)
         plt.savefig(self.plot_file)
+        plt.close()
 
         def delete_plot_file():
             time.sleep(5)
