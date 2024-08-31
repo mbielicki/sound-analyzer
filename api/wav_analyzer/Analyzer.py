@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
+import matplotlib
 from hashlib import sha1
 from scipy.fft import fft
 from .utils import f_to_key, get_maxima
@@ -8,6 +9,8 @@ from .utils import f_to_key, get_maxima
 import os
 import time
 import threading
+
+matplotlib.use('Agg')
 
 class Analyzer:
     def __init__(self, chunk: bytes):
@@ -29,13 +32,13 @@ class Analyzer:
         return normalized_yf
         
     def plot(self):
-        plt.cla()
-        plt.xscale('log')
-        plt.xlim(28, 4000)
-        plt.ylim(0, 10)
-        plt.plot(self.xf, self.yf)
-        plt.savefig(self.plot_file)
-        plt.close()
+        fig, ax = plt.subplots()
+        ax.set(xlabel='Frequency (Hz)', ylabel='Amplitude')
+        ax.set_xscale('log')
+        ax.set_xlim(28, 4000)
+        ax.set_ylim(0, 10)
+        ax.plot(self.xf, self.yf)
+        fig.savefig(self.plot_file)
 
         def delete_plot_file():
             time.sleep(5)
