@@ -28,6 +28,15 @@ const createKeys = () => {
 }
 
 const keys = createKeys()
+const octaves: key[][] = Array()
+keys.forEach((k, i) => {
+    const octave = Math.floor((i + 9) / 12)
+
+    if (octaves[octave] === undefined)
+        octaves.push(new Array())
+
+    octaves[octave].push(k)
+})
 
 const Piano = ({ pressedKeys = [] }) => {
     const getKeyClasses = (key: key) => {
@@ -40,13 +49,16 @@ const Piano = ({ pressedKeys = [] }) => {
     };
 
     return (
-        <div className="flex justify-center p-5 overflow-x-auto">
-            {keys.map((key) => (
-                <div
-                    key={key.id}
-                    className={getKeyClasses(key)}
-                />
-            ))}
+        <div className="flex justify-center p-5 flex-wrap">
+            {octaves.map((octave, i) =>
+                <div key={i} className="flex">
+                    {octave.map(key =>
+                        <div key={key.id}
+                            className={getKeyClasses(key)}
+                        />
+                    )}
+                </div>
+            )}
         </div>
     );
 };
