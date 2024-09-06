@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 
-from api.wav_analyzer.notes import note_name_to_n, note_to_f
+from api.wav_analyzer.notes import note, note_to_f
 
 
 SAMPLE_RATE = 48_000 
@@ -16,7 +16,7 @@ def make_waves(recipe: MakeWavesRecipe, duration: float, samples_ps: int = SAMPL
     waves = np.zeros(samples_no)
     for freq, amp in recipe:
         if type(freq) is str:
-            freq = note_to_f(note_name_to_n(freq))
+            freq = note_to_f(note(freq))
         waves += amp * np.sin(2 * np.pi * freq * t)
 
     return t, waves

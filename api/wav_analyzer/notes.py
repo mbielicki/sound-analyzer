@@ -12,9 +12,10 @@ def f_to_note(f: float) -> int | None:
 def note_to_f(n: int) -> float:
     return 440 * 2 ** ((n - 48) / 12)
 
+
 note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
-def note_n_to_name(n: int) -> str:
+def note_name(n: int) -> str:
     if n < 0:
         raise ValueError(f'note {n} is too low')
     if n >= 88:
@@ -25,7 +26,7 @@ def note_n_to_name(n: int) -> str:
     
     return f'{note_names[n_in_octave]}{octave}'
 
-def note_name_to_n(name: str) -> int:
+def note(name: str) -> int:
     pattern = r'^[A-Ga-g]#?[0-8]$'
     if re.fullmatch(pattern, name) is None:
         raise ValueError(f'{name} is not a valid note name')
