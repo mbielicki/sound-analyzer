@@ -39,8 +39,6 @@ def extract_notes(xf: npFloats, yf: npFloats) -> list[int]:
 
     return notes
 
-
-
 def f_to_note(f: float) -> int | None:
     if f < 20:
          return None
@@ -49,6 +47,8 @@ def f_to_note(f: float) -> int | None:
         return None
     return n
 
+def note_to_f(n: int) -> float:
+    return 440 * 2 ** ((n - 48) / 12)
 
 note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
@@ -82,7 +82,22 @@ def note_name_to_n(name: str) -> int:
 
     return n
      
+type MakeWavesRecipe = list[tuple[float | str, float]]
+def make_waves(recipe: MakeWavesRecipe, duration: float, samples_ps: int = SAMPLE_RATE) -> npTuple:
+    samples_no = round(duration * samples_ps)
+    t = np.linspace(0, duration, samples_no, endpoint=False)
+    waves = np.zeros(samples_no)
+    for freq, amp in recipe:
+        if type(freq) is str:
+            freq = note_to_f(note_name_to_n(freq))
+        waves += amp * np.sin(2 * np.pi * freq * t)
 
+    return t, waves
+
+
+def to_wav_bytes(waves: npFloats) -> bytes:
+    waves = waves * np.iinfo(np.int16).max
+    return waves.astype(np.int16).tobytes()
 
 def get_maxima(x: npFloats, y: npFloats):
     maxima = []
@@ -119,8 +134,7 @@ def plot_frequencies(xf: npFloats, yf: npFloats, plot_file: str) -> None:
             os.remove(plot_file)
 
         threading.Thread(target=delete_plot_file).start()
-
-        
+   
 def remove_wav_headers(chunk: bytes) -> None:
     if chunk[:4] == b'RIFF':
         chunk = chunk[44:]

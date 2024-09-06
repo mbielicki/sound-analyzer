@@ -1,5 +1,20 @@
 from django.test import TestCase
-from ..wav_analyzer.analyze import f_to_note, note_n_to_name, note_name_to_n
+from ..wav_analyzer.analyze import extract_frequencies, extract_notes, f_to_note, make_waves, note_n_to_name, note_name_to_n, note_to_f, to_wav_bytes
+
+class FftTestCase(TestCase):
+    def test_detect_waves(self):
+        freqs = [
+            ('A0', 0.3),
+            ('A3', 0.2),
+            ('C4', 0.1),
+            ('E4', 0.1),
+            ('A6', 0.05)
+        ]
+        chunk = to_wav_bytes(make_waves(freqs, duration=0.5)[1])
+        xf, yf = extract_frequencies(chunk)
+        notes = extract_notes(xf, yf)
+        self.assertIn(note_name_to_n('C4'), notes)
+
 
 class NoteConversionTestCase(TestCase):
     def test_f_to_note(self):
