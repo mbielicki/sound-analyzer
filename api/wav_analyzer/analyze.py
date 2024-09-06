@@ -61,7 +61,7 @@ def plot_frequencies(xf: npFloats, yf: npFloats, plot_file: str, time_to_delete:
         fig, ax = plt.subplots()
         ax.set(xlabel='Frequency (Hz)', ylabel='Amplitude')
         ax.set_xscale('log')
-        ax.set_xlim(0, 8000)
+        ax.set_xlim(20, 8000)
         ax.set_ylim(0, 1e7)
         ax.plot(xf, yf)
         fig.savefig(plot_file)
