@@ -57,7 +57,7 @@ def get_maxima(x: npFloats, y: npFloats):
 
     return list(dict.fromkeys(maxima))
 
-def plot_frequencies(xf: npFloats, yf: npFloats, plot_file: str) -> None:
+def plot_frequencies(xf: npFloats, yf: npFloats, plot_file: str, time_to_delete: float = 5) -> None:
         fig, ax = plt.subplots()
         ax.set(xlabel='Frequency (Hz)', ylabel='Amplitude')
         ax.set_xscale('log')
@@ -67,7 +67,7 @@ def plot_frequencies(xf: npFloats, yf: npFloats, plot_file: str) -> None:
         fig.savefig(plot_file)
 
         def delete_plot_file():
-            time.sleep(5)
+            time.sleep(time_to_delete)
             os.remove(plot_file)
 
         threading.Thread(target=delete_plot_file).start()
