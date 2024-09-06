@@ -6,7 +6,7 @@ import os
 import time
 import threading
 
-from api.wav_analyzer.notes import f_to_note
+from api.wav_analyzer.notes import f_to_note, note_name_to_f
 from api.wav_analyzer.wav import SAMPLE_RATE, npFloats, npTuple
 
 matplotlib.use('Agg')
@@ -58,11 +58,14 @@ def get_maxima(x: npFloats, y: npFloats):
     return list(dict.fromkeys(maxima))
 
 def plot_frequencies(xf: npFloats, yf: npFloats, plot_file: str, time_to_delete: float = 5) -> None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(10, 5))
         ax.set(xlabel='Frequency (Hz)', ylabel='Amplitude')
         ax.set_xscale('log')
         ax.set_xlim(20, 8000)
         ax.set_ylim(0, 1e7)
+        ticks_notes = ['A0', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8']
+        ticks_fs = [note_name_to_f(n) for n in ticks_notes]
+        ax.set_xticks(ticks_fs, ticks_notes)
         ax.plot(xf, yf)
         fig.savefig(plot_file)
 

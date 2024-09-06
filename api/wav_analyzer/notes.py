@@ -12,6 +12,8 @@ def f_to_note(f: float) -> int | None:
 def note_to_f(n: int) -> float:
     return 440 * 2 ** ((n - 48) / 12)
 
+def note_name_to_f(name: str) -> float:
+    return note_to_f(note(name))
 
 note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
