@@ -1,5 +1,5 @@
-// export const baseUrl = "http://192.168.0.107:8000";
-export const baseUrl = "http://localhost:8000";
+export const baseUrl = "http://192.168.0.107:8000";
+// export const baseUrl = "http://localhost:8000";
 
 export const mediaRecorderOptions = {
     mimeType: "audio/wav",

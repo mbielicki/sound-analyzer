@@ -3,7 +3,7 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 import matplotlib
 from scipy.fft import rfft, rfftfreq
-
+import re
 import os
 import time
 import threading
@@ -16,38 +16,72 @@ matplotlib.use('Agg')
 SAMPLE_RATE = 48_000 
 
 def extract_frequencies(chunk: bytes) -> npTuple:
-        data_np = np.frombuffer(chunk, dtype=np.int16)
+    data_np = np.frombuffer(chunk, dtype=np.int16)
 
-        samples_no = len(data_np)
-        samples_ps = SAMPLE_RATE
+    samples_no = len(data_np)
+    samples_ps = SAMPLE_RATE
 
-        xf = rfftfreq(samples_no, 1 / samples_ps)
-        yf = np.abs(rfft(data_np))
-        
-        max_freq = 8_000 # higher than B8
-        i_max: int = np.where(xf < max_freq)[0][-1]
+    xf = rfftfreq(samples_no, 1 / samples_ps)
+    yf = np.abs(rfft(data_np))
+    
+    max_freq = 8_000 # higher than B8
+    i_max: int = np.where(xf < max_freq)[0][-1]
 
-        xf = xf[:i_max]
-        yf = yf[:i_max]
+    xf = xf[:i_max]
+    yf = yf[:i_max]
 
-        return xf, yf
+    return xf, yf
 
 def extract_notes(xf: npFloats, yf: npFloats) -> list[int]:        
-        piano_keys: list[int] = list()
-        for f in get_maxima(xf, yf):
-            piano_keys.append(f_to_key(f))
+    notes: list[int] = list()
+    for f in get_maxima(xf, yf):
+        notes.append(f_to_note(f))
 
-        return piano_keys
+    return notes
 
 
 
-def f_to_key(f: float) -> int:
-    if f > 4100:
-        return -1
-    if f < 28:
-        return -2
-    return int(12 * np.log2(f / 440) + 48)
+def f_to_note(f: float) -> int | None:
+    if f < 20:
+         return None
+    n = round(12 * np.log2(f / 440) + 48)
+    if n < 0 or n >= 88:
+        return None
+    return n
 
+
+note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+def note_n_to_name(n: int) -> str:
+    if n < 0:
+        raise ValueError(f'note {n} is too low')
+    if n >= 88:
+         raise ValueError(f'note {n} is too high')
+    
+    octave = (n - 3) // 12 + 1
+    n_in_octave = (n - 3) % 12
+    
+    return f'{note_names[n_in_octave]}{octave}'
+
+def note_name_to_n(name: str) -> int:
+    pattern = r'^[A-Ga-g]#?[0-8]$'
+    if re.fullmatch(pattern, name) is None:
+        raise ValueError(f'{name} is not a valid note name')
+    
+    note = name[:-1].upper()
+
+    if note not in note_names:
+        raise ValueError(f'{name} is not a valid note name, use one of {note_names}')
+    
+    octave = int(name[-1])
+    n_in_octave = note_names.index(note)
+
+    n = octave * 12 + n_in_octave - 9
+    if n < 0 or n >= 88:
+        raise ValueError(f'{name} does not fit on a piano keyboard')
+
+    return n
+     
 
 
 def get_maxima(x: npFloats, y: npFloats):
