@@ -6,17 +6,13 @@ from api.wav_analyzer.wav import make_waves, to_wav_bytes
 
 class FftTestCase(TestCase):
     def test_detect_waves(self):
-        freqs = [
-            ('A0', 0.3),
-            ('A3', 0.2),
-            ('C4', 0.1),
-            ('E4', 0.1),
-            ('A6', 0.05)
-        ]
-        chunk = to_wav_bytes(make_waves(freqs, duration=0.5)[1])
+        freqs = ['A0', 'A3', 'C4', 'E4', 'A6']
+        amps = [0.3, 0.2, 0.1, 0.1, 0.05]
+        chunk = make_waves(freqs, amps, duration=0.5)
         xf, yf = wav_to_fs(chunk)
         notes = fs_to_notes(xf, yf)
-        self.assertIn(note('C4'), notes)
+        for f in freqs:
+            self.assertIn(note(f), notes)
 
 
 class NoteConversionTestCase(TestCase):
