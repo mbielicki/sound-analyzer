@@ -20,7 +20,7 @@ def wav_to_fs(chunk: bytes) -> npTuple:
     xf = rfftfreq(samples_no, 1 / samples_ps)
     yf = np.abs(rfft(data_np))
     
-    max_freq = 8_000 # higher than B8
+    max_freq = 4_500 # higher than C8
     i_max: int = np.where(xf < max_freq)[0][-1]
 
     xf = xf[:i_max]

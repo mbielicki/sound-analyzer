@@ -1,13 +1,13 @@
 from django.test import TestCase
 
-from api.wav_analyzer.analyze import fs_to_notes, wav_to_fs
+from api.wav_analyzer.analyze import fs_to_notes, plot_frequencies, wav_to_fs
 from api.wav_analyzer.notes import f_to_note, note_name, note
 from api.wav_analyzer.wav import make_waves, to_wav_bytes
 
 class FftTestCase(TestCase):
     def test_detect_chord(self):
         freqs = ['A0', 'A3', 'C4', 'E4', 'A6']
-        amps = [0.3, 0.2, 0.1, 0.1, 0.05]
+        amps = [0.03, 0.02, 0.01, 0.01, 0.005]
         chunk = make_waves(freqs, amps, duration=0.4)
         xf, yf = wav_to_fs(chunk)
         notes = fs_to_notes(xf, yf)
@@ -16,13 +16,12 @@ class FftTestCase(TestCase):
 
     def test_detect_bass(self):
         freqs = ['A0']
-        amps = [0.3]
-        chunk = make_waves(freqs, amps, duration=0.5)
+        amps = [.02]
+        chunk = make_waves(freqs, amps, duration=0.4)
         xf, yf = wav_to_fs(chunk)
         notes = fs_to_notes(xf, yf)
         for f in freqs:
             self.assertIn(note(f), notes)
-        
 
 
 class NoteConversionTestCase(TestCase):
